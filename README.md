@@ -1,6 +1,6 @@
 # Data-communication
 
-데이터통신 수업 과제로 작성한 Winsock 소켓 프로그래밍 코드.
+Winsock 소켓 프로그래밍 코드.
 TCP/UDP 에코 서버·클라이언트와 UDP 파일 전송 프로그램을 구현했다.
 
 ## 개발 환경
