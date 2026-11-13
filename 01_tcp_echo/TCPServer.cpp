@@ -1,4 +1,4 @@
-#include "../Common.h"
+ï»¿#include "../common/Common.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -6,12 +6,12 @@
 int main(int argc, char *argv[]) {
 	int retval;
 
-	// À©¼Ó ÃÊ±âÈ­
+	// ìœˆì† ì´ˆê¸°í™”
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
-	// ¼ÒÄÏ »ı¼º
+	// ì†Œì¼“ ìƒì„±
 	SOCKET listen_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (listen_sock == INVALID_SOCKET) err_quit("socket()");
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 	retval = listen(listen_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR) err_quit("listen()");
 
-	// µ¥ÀÌÅÍ Åë½Å¿¡ »ç¿ëÇÒ º¯¼ö
+	// ë°ì´í„° í†µì‹ ì— ì‚¬ìš©í•  ë³€ìˆ˜
 	SOCKET client_sock;
 	struct sockaddr_in client_addr;
 	int addrlen;
@@ -41,37 +41,37 @@ int main(int argc, char *argv[]) {
 		client_sock = accept(listen_sock, (struct sockaddr *)&client_addr, &addrlen);
 		if (client_sock == INVALID_SOCKET) { err_display("accept()"); break; }
 
-		// Á¢¼ÓÇÑ Å¬¶óÀÌ¾ğÆ® Á¤º¸ Ãâ·Â
+		// ì ‘ì†í•œ í´ë¼ì´ì–¸íŠ¸ ì •ë³´ ì¶œë ¥
 		char addr[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &client_addr.sin_addr, addr, sizeof(addr));
-		printf("\n[TCP ¼­¹ö] Å¬¶óÀÌ¾ğÆ® Á¢¼Ó: IP ÁÖ¼Ò(%s), Æ÷Æ® ¹øÈ£(%d)\n", 
+		printf("\n[TCP ì„œë²„] í´ë¼ì´ì–¸íŠ¸ ì ‘ì†: IP ì£¼ì†Œ(%s), í¬íŠ¸ ë²ˆí˜¸(%d)\n", 
 			addr, ntohs(client_addr.sin_port));
 
-		// Å¬¶óÀÌ¾ğÆ®¿Í µ¥ÀÌÅÍ Åë½Å
-		while (1) { // µ¥ÀÌÅÍ ¹Ş±â
+		// í´ë¼ì´ì–¸íŠ¸ì™€ ë°ì´í„° í†µì‹ 
+		while (1) { // ë°ì´í„° ë°›ê¸°
 			retval = recv(client_sock, buf, BUFSIZE, 0);
 			if (retval == SOCKET_ERROR) { err_display("recv()"); break; }
 			else if (retval == 0) break;
 
-			// ¹ŞÀº µ¥ÀÌÅÍ Ãâ·Â
+			// ë°›ì€ ë°ì´í„° ì¶œë ¥
 			buf[retval] = '\0';
 			printf("[TCP/%s:%d] %s\n", addr, ntohs(client_addr.sin_port), buf);
 
-			// µ¥ÀÌÅÍ º¸³»±â
+			// ë°ì´í„° ë³´ë‚´ê¸°
 			retval = send(client_sock, buf, retval, 0);
 			if (retval == SOCKET_ERROR) { err_display("send()"); break; }
 		}
 
-		// ¼ÒÄÏ ´İ±â
+		// ì†Œì¼“ ë‹«ê¸°
 		closesocket(client_sock);
-		printf("[TCP ¼­¹ö] Å¬¶óÀÌ¾ğÆ® Á¾·á: IP ÁÖ¼Ò=%s, Æ÷Æ® ¹øÈ£=%d\n",
+		printf("[TCP ì„œë²„] í´ë¼ì´ì–¸íŠ¸ ì¢…ë£Œ: IP ì£¼ì†Œ=%s, í¬íŠ¸ ë²ˆí˜¸=%d\n",
 			addr, ntohs(client_addr.sin_port));
 	}
 
-	// ¼ÒÄÏ ´İ±â
+	// ì†Œì¼“ ë‹«ê¸°
 	closesocket(listen_sock);
 
-	// À©¼Ó Á¾·á
+	// ìœˆì† ì¢…ë£Œ
 	WSACleanup();
 	return 0;
 }

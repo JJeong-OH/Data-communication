@@ -1,5 +1,5 @@
-#include "../Common.h"
-#include "../ValidateIP.h"
+ï»¿#include "../common/Common.h"
+#include "../common/validateIP.h"
 
 char* SERVERIP = (char*)"127.0.0.1";
 #define SERVERPORT 9000
@@ -9,69 +9,68 @@ char* SERVERIP = (char*)"127.0.0.1";
 int main(int argc, char* argv[]) {
     int retval;
 
-    // ¸í·ÉÇà ÀÎ¼ö°¡ ÀÖÀ¸¸é IP ÁÖ¼Ò·Î »ç¿ë
+    // ëª…ë ¹í–‰ ì¸ìˆ˜ê°€ ìˆìœ¼ë©´ IP ì£¼ì†Œë¡œ ì‚¬ìš©
     if (argc > 1) {
         if (validateIP(argv[1])) SERVERIP = argv[1];
-        else printf("ÁöÁ¤ÇÑ IP ÁÖ¼Ò°¡ À¯È¿ÇÏÁö ¾Ê½À´Ï´Ù!\n ±âº» ·ÎÄÃ ÁÖ¼Ò¸¦ »ç¿ëÇÕ´Ï´Ù !~ \n");
+        else printf("ì§€ì •í•œ IP ì£¼ì†Œê°€ ìœ íš¨í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!\n ê¸°ë³¸ ë¡œì»¬ ì£¼ì†Œë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤ !~ \n");
     }
 
-    // À©¼Ó ÃÊ±âÈ­
+    // ìœˆì† ì´ˆê¸°í™”
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) return 1;
 
-    // ¼ÒÄÏ »ı¼º
+    // ì†Œì¼“ ìƒì„±
     SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET) err_quit("socket()");
 
-    // ¼ÒÄÏ ÁÖ¼Ò ±¸Á¶Ã¼ ÃÊ±âÈ­
+    // ì†Œì¼“ ì£¼ì†Œ êµ¬ì¡°ì²´ ì´ˆê¸°í™”
     struct sockaddr_in serveraddr;
     memset(&serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
     serveraddr.sin_port = htons(SERVERPORT);
 
-    // µ¥ÀÌÅÍ Åë½Å¿¡ »ç¿ëÇÒ º¯¼ö
+    // ë°ì´í„° í†µì‹ ì— ì‚¬ìš©í•  ë³€ìˆ˜
     struct sockaddr_in peeraddr;
     int addrlen;
     char buf[BUFSIZE + 1];
     int len;
 
-    // ¼­¹ö¿Í µ¥ÀÌÅÍ Åë½Å
+    // ì„œë²„ì™€ ë°ì´í„° í†µì‹ 
     while (1) {
-        // µ¥ÀÌÅÍ ÀÔ·Â
-        printf("\n[º¸³¾ µ¥ÀÌÅÍ] ");
+        // ë°ì´í„° ì…ë ¥
+        printf("\n[ë³´ë‚¼ ë°ì´í„°] ");
         if (fgets(buf, BUFSIZE + 1, stdin) == NULL) break;
 
-        // '\n' ¹®ÀÚ Á¦°Å
         len = (int)strlen(buf);
         if (buf[len - 1] == '\n') buf[len - 1] = '\0';
         if (strlen(buf) == 0) break;
 
-        // µ¥ÀÌÅÍ º¸³»±â
+        // ë°ì´í„° ë³´ë‚´ê¸°
         retval = sendto(sock, buf, (int)strlen(buf), 0, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
         if (retval == SOCKET_ERROR) { err_display("sendto()"); break; }
-        printf("[UDP Å¬¶óÀÌ¾ğÆ®] %d¹ÙÀÌÆ®¸¦ º¸³Â½À´Ï´Ù.\n", retval);
+        printf("[UDP í´ë¼ì´ì–¸íŠ¸] %dë°”ì´íŠ¸ë¥¼ ë³´ëƒˆìŠµë‹ˆë‹¤.\n", retval);
 
-        // µ¥ÀÌÅÍ ¹Ş±â
+        // ë°ì´í„° ë°›ê¸°
         addrlen = sizeof(peeraddr);
         retval = recvfrom(sock, buf, BUFSIZE, 0, (struct sockaddr*)&peeraddr, &addrlen);
         if (retval == SOCKET_ERROR) { err_display("recvfrom()"); break; }
 
-        // ¼Û½ÅÀÚÀÇ ÁÖ¼Ò Ã¼Å©
+        // ì†¡ì‹ ìì˜ ì£¼ì†Œ ì²´í¬
         if (memcmp(&peeraddr, &serveraddr, sizeof(peeraddr)) != 0) {
-            printf("[¿À·ù] Àß¸øµÈ µ¥ÀÌÅÍÀÔ´Ï´Ù!\n");
+            printf("[ì˜¤ë¥˜] ì˜ëª»ëœ ë°ì´í„°ì…ë‹ˆë‹¤!\n");
             break;
         }
 
-        // ¹ŞÀº µ¥ÀÌÅÍ Ãâ·Â
+        // ë°›ì€ ë°ì´í„° ì¶œë ¥
         buf[retval] = '\0';
-        printf("[¼­¹ö ÀÀ´ä] %s (%d bytes)\n", buf, retval);
+        printf("[ì„œë²„ ì‘ë‹µ] %s (%d bytes)\n", buf, retval);
     }
 
-    // ¼ÒÄÏ ´İ±â
+    // ì†Œì¼“ ë‹«ê¸°
     closesocket(sock);
 
-    // À©¼Ó Á¾·á
+    // ìœˆì† ì¢…ë£Œ
     WSACleanup();
 
     return 0;

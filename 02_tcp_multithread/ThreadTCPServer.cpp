@@ -1,4 +1,4 @@
-#include "../Common.h"
+ï»¿#include "../common/Common.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE 512
@@ -15,7 +15,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
     inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
-    printf("[TCP ¼­¹ö] Å¬¶óÀÌ¾ğÆ® Á¢¼Ó: IPÁÖ¼Ò=%s, Æ÷Æ®¹øÈ£=%d\n", addr, ntohs(clientaddr.sin_port));
+    printf("[TCP ì„œë²„] í´ë¼ì´ì–¸íŠ¸ ì ‘ì†: IPì£¼ì†Œ=%s, í¬íŠ¸ë²ˆí˜¸=%d\n", addr, ntohs(clientaddr.sin_port));
 
     while (1) {
         retval = recv(client_sock, buf, BUFSIZE, 0);
@@ -38,7 +38,7 @@ DWORD WINAPI ProcessClient(LPVOID arg) {
     }
 
     closesocket(client_sock);
-    printf("[TCP ¼­¹ö] Å¬¶óÀÌ¾ğÆ® Á¾·á: IPÁÖ¼Ò=%s, Æ÷Æ®¹øÈ£=%d\n", addr, ntohs(clientaddr.sin_port));
+    printf("[TCP ì„œë²„] í´ë¼ì´ì–¸íŠ¸ ì¢…ë£Œ: IPì£¼ì†Œ=%s, í¬íŠ¸ë²ˆí˜¸=%d\n", addr, ntohs(clientaddr.sin_port));
     return 0;
 }
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
         err_quit("listen()");
     }
 
-    printf("[TCP ¼­¹ö] ¾²·¹µå ¼­¹ö µ¿ÀÛ...\n");
+    printf("[TCP ì„œë²„] ì“°ë ˆë“œ ì„œë²„ ë™ì‘...\n");
 
     while (1) {
         struct sockaddr_in clientaddr;
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 
         char addr[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
-        printf("\n[TCP ¼­¹ö] Å¬¶óÀÌ¾ğÆ® Á¢¼Ó: IPÁÖ¼Ò=%s, Æ÷Æ®¹øÈ£=%d\n", addr, ntohs(clientaddr.sin_port));
+        printf("\n[TCP ì„œë²„] í´ë¼ì´ì–¸íŠ¸ ì ‘ì†: IPì£¼ì†Œ=%s, í¬íŠ¸ë²ˆí˜¸=%d\n", addr, ntohs(clientaddr.sin_port));
 
         HANDLE hThread = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock, 0, NULL);
         if (hThread == NULL) {

@@ -1,14 +1,14 @@
-#define _CRT_SECURE_NO_WARNINGS // ±¸Çü C ÇÔ¼ö »ç¿ë ½Ã °æ°í ²ô±â
-#define _WINSOCK_DEPRECATED_NO_WARNINGS // ±¸Çü ¼ÒÄÏ API »ç¿ë ½Ã °æ°í ²ô±â
+ï»¿#define _CRT_SECURE_NO_WARNINGS // êµ¬í˜• C í•¨ìˆ˜ ì‚¬ìš© ì‹œ ê²½ê³  ë„ê¸°
+#define _WINSOCK_DEPRECATED_NO_WARNINGS // êµ¬í˜• ì†Œì¼“ API ì‚¬ìš© ì‹œ ê²½ê³  ë„ê¸°
 
-#include <tchar.h> // _T(), ...
-#include <stdio.h> // printf(), ...
-#include <stdlib.h> // exit(), ...
-#include <string.h> // strncpy(), ...
-#include <winsock2.h> // À©¼Ó2 ¸ŞÀÎ Çì´õ
-#include <ws2tcpip.h> // À©¼Ó2 È®Àå Çì´õ
+#include <tchar.h> 
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <winsock2.h> 
+#include <ws2tcpip.h> 
 
-#pragma comment(lib, "Ws2_32.lib") // ws2_32.lib ¸µÅ©
+#pragma comment(lib, "Ws2_32.lib") 
 //---------------------------------------------------------------------------------
 #ifndef _MY_COMM_H
 #define _MY_COMM_H
@@ -24,8 +24,11 @@ typedef unsigned long long u64;
 #define CLIENT	2
 #define MSG		3
 #define BUF_SIZE 1024
+#define HDR_SIZE 4		// íŒ¨í‚· ì•ì— ë¶™ì´ëŠ” ìˆœì„œ ë²ˆí˜¸ í¬ê¸°
+#define TIMEOUT_MS 500	// ACK ê¸°ë‹¤ë¦¬ëŠ” ì‹œê°„
+#define MAX_RETRY 10	// ìµœëŒ€ ì¬ì „ì†¡ íšŸìˆ˜
 
-const char* notFound = "ÆÄÀÏÀÌ ¾ø¾î¿ä~!!!.";
+const char* notFound = "íŒŒì¼ì´ ì—†ì–´ìš”~!!!.";
 
 void msg(char part, const char* msg) {
 	switch (part) {
@@ -52,9 +55,8 @@ u64 GetMicroCounter()
 
 	return Counter;
 }
-//---------------------------------------------------------------------------------
 
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â ÈÄ Á¾·á
+// ì†Œì¼“ í•¨ìˆ˜ ì˜¤ë¥˜ ì¶œë ¥ í›„ ì¢…ë£Œ
 void err_quit(const char* msg)
 {
 	LPVOID lpMsgBuf;
@@ -68,7 +70,7 @@ void err_quit(const char* msg)
 	exit(1);
 }
 
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â
+// ì†Œì¼“ í•¨ìˆ˜ ì˜¤ë¥˜ ì¶œë ¥
 void err_display(const char* msg)
 {
 	LPVOID lpMsgBuf;
@@ -81,7 +83,7 @@ void err_display(const char* msg)
 	LocalFree(lpMsgBuf);
 }
 
-// ¼ÒÄÏ ÇÔ¼ö ¿À·ù Ãâ·Â
+// ì†Œì¼“ í•¨ìˆ˜ ì˜¤ë¥˜ ì¶œë ¥
 void err_display(int errcode)
 {
 	LPVOID lpMsgBuf;
@@ -90,7 +92,7 @@ void err_display(int errcode)
 		NULL, errcode,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(char*)&lpMsgBuf, 0, NULL);
-	printf("[¿À·ù] %s\n", (char*)lpMsgBuf);
+	printf("[ì˜¤ë¥˜] %s\n", (char*)lpMsgBuf);
 	LocalFree(lpMsgBuf);
 }
 
